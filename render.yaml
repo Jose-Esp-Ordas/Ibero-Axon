@@ -1,0 +1,24 @@
+# Render.com configuration file
+services:
+  - type: web
+    name: ibero-axon-api
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGODB_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_NAME
+        value: ibero_axon_db
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DEBUG
+        value: False
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30

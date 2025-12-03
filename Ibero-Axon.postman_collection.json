@@ -1,0 +1,917 @@
+{
+	"info": {
+		"_postman_id": "ibero-axon-api-collection",
+		"name": "Ibero-Axon Production API",
+		"description": "Colección completa de endpoints para la API de Trazabilidad de Producción Industrial",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "part_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "station_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "event_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Root",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						}
+					}
+				},
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('user_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Admin User\",\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\",\n  \"rol\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register Operator",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Operador Test\",\n  \"email\": \"operador@test.com\",\n  \"password\": \"operador123\",\n  \"rol\": \"OPERADOR\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('token', jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/",
+							"host": ["{{base_url}}"],
+							"path": ["users", ""]
+						}
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Filter Users by Role",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/?rol=OPERADOR",
+							"host": ["{{base_url}}"],
+							"path": ["users", ""],
+							"query": [
+								{
+									"key": "rol",
+									"value": "OPERADOR"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Stations",
+			"item": [
+				{
+					"name": "Create Station",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('station_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Estación de Ensamble 1\",\n  \"tipo\": \"ENSAMBLE\",\n  \"linea\": \"Línea A\",\n  \"activa\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/stations/",
+							"host": ["{{base_url}}"],
+							"path": ["stations", ""]
+						}
+					}
+				},
+				{
+					"name": "List Stations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stations/",
+							"host": ["{{base_url}}"],
+							"path": ["stations", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Station by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stations/{{station_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["stations", "{{station_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Filter Stations by Line",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stations/?linea=Línea A",
+							"host": ["{{base_url}}"],
+							"path": ["stations", ""],
+							"query": [
+								{
+									"key": "linea",
+									"value": "Línea A"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Station",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"activa\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/stations/{{station_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["stations", "{{station_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Parts",
+			"item": [
+				{
+					"name": "Create Part",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('part_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"serial\": \"PZA-TEST-001\",\n  \"tipo_pieza\": \"X1\",\n  \"lote\": \"LOTE-2024-12\",\n  \"status\": \"EN_PROCESO\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/parts/",
+							"host": ["{{base_url}}"],
+							"path": ["parts", ""]
+						}
+					}
+				},
+				{
+					"name": "List Parts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/",
+							"host": ["{{base_url}}"],
+							"path": ["parts", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Part by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/{{part_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["parts", "{{part_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Part by Serial",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/serial/PZA-TEST-001",
+							"host": ["{{base_url}}"],
+							"path": ["parts", "serial", "PZA-TEST-001"]
+						}
+					}
+				},
+				{
+					"name": "Filter Parts by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/?status=EN_PROCESO",
+							"host": ["{{base_url}}"],
+							"path": ["parts", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "EN_PROCESO"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter Parts by Type and Lot",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/?tipo_pieza=X1&lote=LOTE-2024-12",
+							"host": ["{{base_url}}"],
+							"path": ["parts", ""],
+							"query": [
+								{
+									"key": "tipo_pieza",
+									"value": "X1"
+								},
+								{
+									"key": "lote",
+									"value": "LOTE-2024-12"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Part",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"OK\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/parts/{{part_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["parts", "{{part_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Traceability",
+			"item": [
+				{
+					"name": "Create Trace Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('event_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"part_id\": \"PZA-TEST-001\",\n  \"station_id\": \"{{station_id}}\",\n  \"timestamp_entrada\": \"2024-12-03T10:00:00\",\n  \"timestamp_salida\": \"2024-12-03T10:15:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Ensamble completado correctamente\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trace/events",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "events"]
+						}
+					}
+				},
+				{
+					"name": "List Trace Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/trace/events",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "events"]
+						}
+					}
+				},
+				{
+					"name": "Get Part History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/trace/parts/PZA-TEST-001/history",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "parts", "PZA-TEST-001", "history"]
+						}
+					}
+				},
+				{
+					"name": "Filter Events by Station",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/trace/events?station_id={{station_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "events"],
+							"query": [
+								{
+									"key": "station_id",
+									"value": "{{station_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter Events by Result",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/trace/events?resultado=OK",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "events"],
+							"query": [
+								{
+									"key": "resultado",
+									"value": "OK"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Trace Event",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"timestamp_salida\": \"2024-12-03T10:20:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/trace/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "events", "{{event_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Metrics",
+			"item": [
+				{
+					"name": "Parts by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metrics/parts-by-status",
+							"host": ["{{base_url}}"],
+							"path": ["metrics", "parts-by-status"]
+						}
+					}
+				},
+				{
+					"name": "Throughput",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metrics/throughput?from=2024-12-01&to=2024-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["metrics", "throughput"],
+							"query": [
+								{
+									"key": "from",
+									"value": "2024-12-01"
+								},
+								{
+									"key": "to",
+									"value": "2024-12-31"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Station Cycle Time",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metrics/station-cycle-time",
+							"host": ["{{base_url}}"],
+							"path": ["metrics", "station-cycle-time"]
+						}
+					}
+				},
+				{
+					"name": "Scrap Rate",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metrics/scrap-rate",
+							"host": ["{{base_url}}"],
+							"path": ["metrics", "scrap-rate"]
+						}
+					}
+				},
+				{
+					"name": "Scrap Rate by Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metrics/scrap-rate?tipo_pieza=X1",
+							"host": ["{{base_url}}"],
+							"path": ["metrics", "scrap-rate"],
+							"query": [
+								{
+									"key": "tipo_pieza",
+									"value": "X1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Quality Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/metrics/quality-summary",
+							"host": ["{{base_url}}"],
+							"path": ["metrics", "quality-summary"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "AI & Analytics",
+			"item": [
+				{
+					"name": "Calculate Risk Score",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"part_id\": \"PZA-TEST-001\",\n  \"num_retrabajos\": 1,\n  \"tiempo_total_segundos\": 850,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/risk-score",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "risk-score"]
+						}
+					}
+				},
+				{
+					"name": "Calculate Risk Score (Heuristic Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"part_id\": \"PZA-TEST-001\",\n  \"num_retrabajos\": 2,\n  \"tiempo_total_segundos\": 1500,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/risk-score?use_ai=false",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "risk-score"],
+							"query": [
+								{
+									"key": "use_ai",
+									"value": "false"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Detect Anomalies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ai/anomalies",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "anomalies"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
