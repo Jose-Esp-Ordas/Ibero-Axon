@@ -14,7 +14,7 @@ class UserRole(str, Enum):
 class User(Document):
     nombre: str
     email: Indexed(EmailStr, unique=True)
-    password: str  # Stored as hashed password
+    password: str  # Guardada como contraseña hasheada
     rol: UserRole = UserRole.OPERADOR
     activo: bool = True
     fecha_registro: datetime = Field(default_factory=datetime.utcnow)

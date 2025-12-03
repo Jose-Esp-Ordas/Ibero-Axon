@@ -4,7 +4,7 @@ from datetime import datetime
 from app.models import UserRole, PartStatus, EventResult
 
 
-# ==================== User Schemas ====================
+# ==================== Schemas de Usuario ====================
 class UserCreate(BaseModel):
     nombre: str
     email: EmailStr
@@ -45,7 +45,7 @@ class TokenData(BaseModel):
     email: Optional[str] = None
 
 
-# ==================== Part Schemas ====================
+# ==================== Schemas de Pieza ====================
 class PartCreate(BaseModel):
     serial: str
     tipo_pieza: str
@@ -71,7 +71,7 @@ class PartUpdate(BaseModel):
     status: Optional[PartStatus] = None
 
 
-# ==================== Station Schemas ====================
+# ==================== Schemas de Estación ====================
 class StationCreate(BaseModel):
     nombre: str
     tipo: str
@@ -97,7 +97,7 @@ class StationUpdate(BaseModel):
     activa: Optional[bool] = None
 
 
-# ==================== TraceEvent Schemas ====================
+# ==================== Schemas de Evento de Trazabilidad ====================
 class TraceEventCreate(BaseModel):
     part_id: str
     station_id: str
@@ -128,7 +128,7 @@ class TraceEventUpdate(BaseModel):
     observaciones: Optional[str] = None
 
 
-# ==================== AI Schemas ====================
+# ==================== Schemas de IA ====================
 class RiskScoreRequest(BaseModel):
     part_id: str
     num_retrabajos: int

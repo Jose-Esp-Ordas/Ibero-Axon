@@ -8,7 +8,7 @@ security = HTTPBearer()
 
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
-    """Get the current authenticated user from JWT token"""
+    """Obtener el usuario autenticado actual desde el token JWT"""
     token = credentials.credentials
     payload = decode_token(token)
     
@@ -36,7 +36,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 
 async def require_role(required_roles: list[UserRole]):
-    """Dependency to require specific roles"""
+    """Dependencia para requerir roles específicos"""
     async def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.rol not in required_roles:
             raise HTTPException(
@@ -47,9 +47,9 @@ async def require_role(required_roles: list[UserRole]):
     return role_checker
 
 
-# Common role dependencies
+# Dependencias comunes de roles
 async def require_admin(current_user: User = Depends(get_current_user)) -> User:
-    """Require ADMIN role"""
+    """Requerir rol ADMIN"""
     if current_user.rol != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -59,7 +59,7 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 async def require_supervisor_or_admin(current_user: User = Depends(get_current_user)) -> User:
-    """Require SUPERVISOR or ADMIN role"""
+    """Requerir rol SUPERVISOR o ADMIN"""
     if current_user.rol not in [UserRole.SUPERVISOR, UserRole.ADMIN]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

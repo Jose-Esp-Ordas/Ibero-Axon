@@ -15,8 +15,8 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UserCreate):
-    """Register a new user"""
-    # Check if user already exists
+    """Registrar un nuevo usuario"""
+    # Verificar si el usuario ya existe
     existing_user = await User.find_one(User.email == user_data.email)
     if existing_user:
         raise HTTPException(
@@ -24,7 +24,7 @@ async def register_user(user_data: UserCreate):
             detail="Email already registered"
         )
     
-    # Create new user with hashed password
+    # Crear nuevo usuario con contraseña hasheada
     hashed_password = get_password_hash(user_data.password)
     new_user = User(
         nombre=user_data.nombre,
@@ -46,7 +46,7 @@ async def register_user(user_data: UserCreate):
 
 @router.post("/login", response_model=Token)
 async def login(user_credentials: UserLogin):
-    """Login and receive JWT token"""
+    """Iniciar sesión y recibir token JWT"""
     user = await authenticate_user(user_credentials.email, user_credentials.password)
     
     if not user:
@@ -67,7 +67,7 @@ async def login(user_credentials: UserLogin):
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
-    """Get current user information"""
+    """Obtener información del usuario actual"""
     return UserResponse(
         id=str(current_user.id),
         nombre=current_user.nombre,

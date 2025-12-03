@@ -3,7 +3,7 @@ from pydantic import Field
 
 
 class StationType(str):
-    """Tipos comunes de estaciones"""
+    """Tipos comunes de estaciones de producción"""
     INSPECCION = "INSPECCION"
     ENSAMBLE = "ENSAMBLE"
     PRUEBA = "PRUEBA"

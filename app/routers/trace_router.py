@@ -14,8 +14,8 @@ async def create_trace_event(
     event_data: TraceEventCreate,
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new trace event - register part passage through a station"""
-    # Verify part exists
+    """Crear un nuevo evento de trazabilidad - registrar el paso de una pieza por una estación"""
+    # Verificar que la pieza existe
     part = await Part.find_one(Part.serial == event_data.part_id)
     if not part:
         raise HTTPException(
@@ -23,7 +23,7 @@ async def create_trace_event(
             detail=f"Part with serial {event_data.part_id} not found"
         )
     
-    # Verify station exists
+    # Verificar que la estación existe
     station = await Station.get(PydanticObjectId(event_data.station_id))
     if not station:
         raise HTTPException(
@@ -31,10 +31,10 @@ async def create_trace_event(
             detail="Station not found"
         )
     
-    # If no operador_id provided, use current user
+    # Si no se proporciona operador_id, usar el usuario actual
     operador_id = event_data.operador_id or str(current_user.id)
     
-    # Create trace event
+    # Crear evento de trazabilidad
     new_event = TraceEvent(
         part_id=event_data.part_id,
         station_id=event_data.station_id,
@@ -46,14 +46,14 @@ async def create_trace_event(
     )
     await new_event.insert()
     
-    # Update part status if event has a result and is completed (has timestamp_salida)
+    # Actualizar el estado de la pieza si el evento tiene un resultado y está completo (tiene timestamp_salida)
     if event_data.resultado and event_data.timestamp_salida:
         if event_data.resultado == EventResult.SCRAP:
             part.status = PartStatus.SCRAP
         elif event_data.resultado == EventResult.RETRABAJO:
             part.status = PartStatus.RETRABAJO
         elif event_data.resultado == EventResult.OK:
-            # Only mark as OK if it wasn't already SCRAP or in RETRABAJO
+            # Solo marcar como OK si no estaba ya en SCRAP o en RETRABAJO
             if part.status == PartStatus.EN_PROCESO:
                 part.status = PartStatus.OK
         
@@ -81,7 +81,7 @@ async def list_trace_events(
     fecha_hasta: Optional[datetime] = None,
     current_user: User = Depends(get_current_user)
 ):
-    """List trace events with filters"""
+    """Listar eventos de trazabilidad con filtros"""
     query_filters = []
     
     if station_id:
@@ -118,8 +118,8 @@ async def get_part_history(
     part_serial: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Get complete history of a part (all trace events in chronological order)"""
-    # Verify part exists
+    """Obtener el historial completo de una pieza (todos los eventos de trazabilidad en orden cronológico)"""
+    # Verificar que la pieza existe
     part = await Part.find_one(Part.serial == part_serial)
     if not part:
         raise HTTPException(
@@ -127,7 +127,7 @@ async def get_part_history(
             detail=f"Part with serial {part_serial} not found"
         )
     
-    # Get all events for this part, sorted by timestamp_entrada
+    # Obtener todos los eventos para esta pieza, ordenados por timestamp_entrada
     events = await TraceEvent.find(
         TraceEvent.part_id == part_serial
     ).sort("+timestamp_entrada").to_list()
@@ -153,7 +153,7 @@ async def update_trace_event(
     event_update: TraceEventUpdate,
     current_user: User = Depends(get_current_user)
 ):
-    """Update trace event (e.g., complete an event with exit timestamp and result)"""
+    """Actualizar evento de trazabilidad (por ejemplo, completar un evento con timestamp de salida y resultado)"""
     event = await TraceEvent.get(PydanticObjectId(event_id))
     if not event:
         raise HTTPException(
@@ -161,14 +161,14 @@ async def update_trace_event(
             detail="Trace event not found"
         )
     
-    # Update fields
+    # Actualizar campos
     update_data = event_update.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(event, field, value)
     
     await event.save()
     
-    # Update part status if result is provided
+    # Actualizar el estado de la pieza si se proporciona resultado
     if event_update.resultado:
         part = await Part.find_one(Part.serial == event.part_id)
         if part:
@@ -199,7 +199,7 @@ async def delete_trace_event(
     event_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Delete trace event"""
+    """Eliminar evento de trazabilidad"""
     event = await TraceEvent.get(PydanticObjectId(event_id))
     if not event:
         raise HTTPException(

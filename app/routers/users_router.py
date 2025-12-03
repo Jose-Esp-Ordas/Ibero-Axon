@@ -17,7 +17,7 @@ async def list_users(
     activo: Optional[bool] = None,
     current_user: User = Depends(require_admin)
 ):
-    """List all users (Admin only)"""
+    """Listar todos los usuarios (Solo administradores)"""
     query_filters = []
     
     if rol is not None:
@@ -48,7 +48,7 @@ async def get_user(
     user_id: str,
     current_user: User = Depends(require_admin)
 ):
-    """Get user by ID (Admin only)"""
+    """Obtener usuario por ID (Solo administradores)"""
     user = await User.get(PydanticObjectId(user_id))
     if not user:
         raise HTTPException(
@@ -72,7 +72,7 @@ async def update_user(
     user_update: UserUpdate,
     current_user: User = Depends(require_admin)
 ):
-    """Update user (Admin only)"""
+    """Actualizar usuario (Solo administradores)"""
     user = await User.get(PydanticObjectId(user_id))
     if not user:
         raise HTTPException(
@@ -80,7 +80,7 @@ async def update_user(
             detail="User not found"
         )
     
-    # Update fields
+    # Actualizar campos
     update_data = user_update.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(user, field, value)
@@ -102,7 +102,7 @@ async def delete_user(
     user_id: str,
     current_user: User = Depends(require_admin)
 ):
-    """Delete user (Admin only)"""
+    """Eliminar usuario (Solo administradores)"""
     user = await User.get(PydanticObjectId(user_id))
     if not user:
         raise HTTPException(

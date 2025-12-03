@@ -13,7 +13,7 @@ class PartStatus(str, Enum):
 
 
 class Part(Document):
-    serial: Indexed(str, unique=True)  # id/serial de la pieza
+    serial: Indexed(str, unique=True)  # ID único/serial de la pieza
     tipo_pieza: str
     lote: str
     status: PartStatus = PartStatus.EN_PROCESO

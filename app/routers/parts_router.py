@@ -14,8 +14,8 @@ async def create_part(
     part_data: PartCreate,
     current_user: User = Depends(get_current_user)
 ):
-    """Create a new part"""
-    # Check if serial already exists
+    """Crear una nueva pieza"""
+    # Verificar si el serial ya existe
     existing_part = await Part.find_one(Part.serial == part_data.serial)
     if existing_part:
         raise HTTPException(
@@ -52,7 +52,7 @@ async def list_parts(
     fecha_hasta: Optional[datetime] = None,
     current_user: User = Depends(get_current_user)
 ):
-    """List parts with filters"""
+    """Listar piezas con filtros"""
     query_filters = []
     
     if status is not None:
@@ -89,7 +89,7 @@ async def get_part(
     part_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Get part by ID"""
+    """Obtener pieza por ID"""
     part = await Part.get(PydanticObjectId(part_id))
     if not part:
         raise HTTPException(
@@ -112,7 +112,7 @@ async def get_part_by_serial(
     serial: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Get part by serial number"""
+    """Obtener pieza por número de serie"""
     part = await Part.find_one(Part.serial == serial)
     if not part:
         raise HTTPException(
@@ -136,7 +136,7 @@ async def update_part(
     part_update: PartUpdate,
     current_user: User = Depends(get_current_user)
 ):
-    """Update part"""
+    """Actualizar pieza"""
     part = await Part.get(PydanticObjectId(part_id))
     if not part:
         raise HTTPException(
@@ -144,7 +144,7 @@ async def update_part(
             detail="Part not found"
         )
     
-    # Update fields
+    # Actualizar campos
     update_data = part_update.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(part, field, value)
@@ -166,7 +166,7 @@ async def delete_part(
     part_id: str,
     current_user: User = Depends(require_admin)
 ):
-    """Delete part (Admin only)"""
+    """Eliminar pieza (Solo administradores)"""
     part = await Part.get(PydanticObjectId(part_id))
     if not part:
         raise HTTPException(
@@ -174,7 +174,7 @@ async def delete_part(
             detail="Part not found"
         )
     
-    # Also delete all trace events for this part
+    # También eliminar todos los eventos de trazabilidad para esta pieza
     await TraceEvent.find(TraceEvent.part_id == part.serial).delete()
     
     await part.delete()

@@ -13,7 +13,7 @@ async def create_station(
     station_data: StationCreate,
     current_user: User = Depends(require_admin)
 ):
-    """Create a new station (Admin only)"""
+    """Crear una nueva estación (Solo administradores)"""
     new_station = Station(
         nombre=station_data.nombre,
         tipo=station_data.tipo,
@@ -40,7 +40,7 @@ async def list_stations(
     activa: Optional[bool] = None,
     current_user: User = Depends(get_current_user)
 ):
-    """List all stations"""
+    """Listar todas las estaciones"""
     query_filters = []
     
     if tipo:
@@ -72,7 +72,7 @@ async def get_station(
     station_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Get station by ID"""
+    """Obtener estación por ID"""
     station = await Station.get(PydanticObjectId(station_id))
     if not station:
         raise HTTPException(
@@ -95,7 +95,7 @@ async def update_station(
     station_update: StationUpdate,
     current_user: User = Depends(require_admin)
 ):
-    """Update station (Admin only)"""
+    """Actualizar estación (Solo administradores)"""
     station = await Station.get(PydanticObjectId(station_id))
     if not station:
         raise HTTPException(
@@ -103,7 +103,7 @@ async def update_station(
             detail="Station not found"
         )
     
-    # Update fields
+    # Actualizar campos
     update_data = station_update.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(station, field, value)
@@ -124,7 +124,7 @@ async def delete_station(
     station_id: str,
     current_user: User = Depends(require_admin)
 ):
-    """Delete station (Admin only)"""
+    """Eliminar estación (Solo administradores)"""
     station = await Station.get(PydanticObjectId(station_id))
     if not station:
         raise HTTPException(

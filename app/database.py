@@ -5,14 +5,14 @@ from app.config import settings
 
 
 async def init_db():
-    """Initialize database connection and Beanie ODM"""
-    # Create Motor client
+    """Inicializar conexión a la base de datos y Beanie ODM"""
+    # Crear cliente Motor
     client = AsyncIOMotorClient(settings.mongodb_url)
     
-    # Get database
+    # Obtener base de datos
     database = client[settings.database_name]
     
-    # Initialize Beanie with document models
+    # Inicializar Beanie con modelos de documentos
     await init_beanie(
         database=database,
         document_models=[

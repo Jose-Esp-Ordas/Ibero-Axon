@@ -15,12 +15,12 @@ class EventResult(str, Enum):
 
 
 class TraceEvent(Document):
-    part_id: str  # Serial de la pieza
-    station_id: str  # ID de la estación
+    part_id: str  # Serial de la pieza que pasó por la estación
+    station_id: str  # ID de la estación donde ocurrió el evento
     timestamp_entrada: datetime
     timestamp_salida: Optional[datetime] = None
     resultado: Optional[EventResult] = None
-    operador_id: Optional[str] = None  # ID del operador
+    operador_id: Optional[str] = None  # ID del operador que procesó la pieza
     observaciones: Optional[str] = None
     
     class Settings:

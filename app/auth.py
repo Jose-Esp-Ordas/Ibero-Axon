@@ -10,17 +10,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hashed password"""
+    """Verificar una contraseña contra un hash"""
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password"""
+    """Generar hash de una contraseña"""
     return pwd_context.hash(password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create a JWT access token"""
+    """Crear un token de acceso JWT"""
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -33,7 +33,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 async def authenticate_user(email: str, password: str) -> Optional[User]:
-    """Authenticate a user by email and password"""
+    """Autenticar un usuario por correo y contraseña"""
     user = await User.find_one(User.email == email)
     if not user:
         return None
@@ -45,7 +45,7 @@ async def authenticate_user(email: str, password: str) -> Optional[User]:
 
 
 def decode_token(token: str) -> dict:
-    """Decode a JWT token"""
+    """Decodificar un token JWT"""
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         return payload
