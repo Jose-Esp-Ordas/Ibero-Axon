@@ -3,7 +3,7 @@ from datetime import timedelta
 from app.config import settings
 from app.models import User, UserRole
 from app.schemas import (
-    UserCreate, UserLogin, UserResponse, UserUpdate, Token
+    UsuarioRegister, UsuarioLogin, UsuarioResponse, UsuarioUpdate, Token
 )
 from app.auth import (
     authenticate_user, create_access_token, get_password_hash
@@ -13,8 +13,8 @@ from app.dependencies import get_current_user, require_admin
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register_user(user_data: UserCreate):
+@router.post("/register", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
+async def register_user(user_data: UsuarioRegister):
     """Registrar un nuevo usuario"""
     # Verificar si el usuario ya existe
     existing_user = await User.find_one(User.email == user_data.email)
@@ -34,7 +34,7 @@ async def register_user(user_data: UserCreate):
     )
     await new_user.insert()
     
-    return UserResponse(
+    return UsuarioResponse(
         id=str(new_user.id),
         nombre=new_user.nombre,
         email=new_user.email,
@@ -45,7 +45,7 @@ async def register_user(user_data: UserCreate):
 
 
 @router.post("/login", response_model=Token)
-async def login(user_credentials: UserLogin):
+async def login(user_credentials: UsuarioLogin):
     """Iniciar sesión y recibir token JWT"""
     user = await authenticate_user(user_credentials.email, user_credentials.password)
     
@@ -65,10 +65,10 @@ async def login(user_credentials: UserLogin):
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/me", response_model=UsuarioResponse)
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Obtener información del usuario actual"""
-    return UserResponse(
+    return UsuarioResponse(
         id=str(current_user.id),
         nombre=current_user.nombre,
         email=current_user.email,

@@ -2,15 +2,15 @@ from fastapi import APIRouter, HTTPException, status, Depends, Query
 from typing import List, Optional
 from beanie import PydanticObjectId
 from app.models import Station, User
-from app.schemas import StationResponse, StationCreate, StationUpdate
+from app.schemas import EstacionResponse, EstacionCreate, EstacionUpdate
 from app.dependencies import get_current_user, require_admin
 
 router = APIRouter(prefix="/stations", tags=["Stations"])
 
 
-@router.post("/", response_model=StationResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=EstacionResponse, status_code=status.HTTP_201_CREATED)
 async def create_station(
-    station_data: StationCreate,
+    station_data: EstacionCreate,
     current_user: User = Depends(require_admin)
 ):
     """Crear una nueva estación (Solo administradores)"""
@@ -22,7 +22,7 @@ async def create_station(
     )
     await new_station.insert()
     
-    return StationResponse(
+    return EstacionResponse(
         id=str(new_station.id),
         nombre=new_station.nombre,
         tipo=new_station.tipo,
@@ -31,7 +31,7 @@ async def create_station(
     )
 
 
-@router.get("/", response_model=List[StationResponse])
+@router.get("/", response_model=List[EstacionResponse])
 async def list_stations(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -56,7 +56,7 @@ async def list_stations(
         stations = await Station.find_all().skip(skip).limit(limit).to_list()
     
     return [
-        StationResponse(
+        EstacionResponse(
             id=str(station.id),
             nombre=station.nombre,
             tipo=station.tipo,
@@ -67,7 +67,7 @@ async def list_stations(
     ]
 
 
-@router.get("/{station_id}", response_model=StationResponse)
+@router.get("/{station_id}", response_model=EstacionResponse)
 async def get_station(
     station_id: str,
     current_user: User = Depends(get_current_user)
@@ -80,7 +80,7 @@ async def get_station(
             detail="Station not found"
         )
     
-    return StationResponse(
+    return EstacionResponse(
         id=str(station.id),
         nombre=station.nombre,
         tipo=station.tipo,
@@ -89,10 +89,10 @@ async def get_station(
     )
 
 
-@router.put("/{station_id}", response_model=StationResponse)
+@router.put("/{station_id}", response_model=EstacionResponse)
 async def update_station(
     station_id: str,
-    station_update: StationUpdate,
+    station_update: EstacionUpdate,
     current_user: User = Depends(require_admin)
 ):
     """Actualizar estación (Solo administradores)"""
@@ -110,7 +110,7 @@ async def update_station(
     
     await station.save()
     
-    return StationResponse(
+    return EstacionResponse(
         id=str(station.id),
         nombre=station.nombre,
         tipo=station.tipo,

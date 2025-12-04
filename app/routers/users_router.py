@@ -2,14 +2,14 @@ from fastapi import APIRouter, HTTPException, status, Depends, Query
 from typing import List, Optional
 from beanie import PydanticObjectId
 from app.models import User, UserRole
-from app.schemas import UserResponse, UserCreate, UserUpdate
+from app.schemas import UsuarioResponse, UsuarioRegister, UsuarioUpdate
 from app.dependencies import require_admin, get_current_user
 from app.auth import get_password_hash
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("/", response_model=List[UsuarioResponse])
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -31,7 +31,7 @@ async def list_users(
         users = await User.find_all().skip(skip).limit(limit).to_list()
     
     return [
-        UserResponse(
+        UsuarioResponse(
             id=str(user.id),
             nombre=user.nombre,
             email=user.email,
@@ -43,7 +43,7 @@ async def list_users(
     ]
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UsuarioResponse)
 async def get_user(
     user_id: str,
     current_user: User = Depends(require_admin)
@@ -56,7 +56,7 @@ async def get_user(
             detail="User not found"
         )
     
-    return UserResponse(
+    return UsuarioResponse(
         id=str(user.id),
         nombre=user.nombre,
         email=user.email,
@@ -66,10 +66,10 @@ async def get_user(
     )
 
 
-@router.put("/{user_id}", response_model=UserResponse)
+@router.put("/{user_id}", response_model=UsuarioResponse)
 async def update_user(
     user_id: str,
-    user_update: UserUpdate,
+    user_update: UsuarioUpdate,
     current_user: User = Depends(require_admin)
 ):
     """Actualizar usuario (Solo administradores)"""
@@ -87,7 +87,7 @@ async def update_user(
     
     await user.save()
     
-    return UserResponse(
+    return UsuarioResponse(
         id=str(user.id),
         nombre=user.nombre,
         email=user.email,

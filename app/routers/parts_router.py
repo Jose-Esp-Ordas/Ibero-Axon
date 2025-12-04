@@ -3,13 +3,13 @@ from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
 from app.models import Part, PartStatus, User, TraceEvent
-from app.schemas import PartResponse, PartCreate, PartUpdate
+from app.schemas import ParteResponse, PartCreate, PartUpdate
 from app.dependencies import get_current_user, require_admin
 
 router = APIRouter(prefix="/parts", tags=["Parts"])
 
 
-@router.post("/", response_model=PartResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ParteResponse, status_code=status.HTTP_201_CREATED)
 async def create_part(
     part_data: PartCreate,
     current_user: User = Depends(get_current_user)
@@ -31,7 +31,7 @@ async def create_part(
     )
     await new_part.insert()
     
-    return PartResponse(
+    return ParteResponse(
         id=str(new_part.id),
         serial=new_part.serial,
         tipo_pieza=new_part.tipo_pieza,
@@ -41,7 +41,7 @@ async def create_part(
     )
 
 
-@router.get("/", response_model=List[PartResponse])
+@router.get("/", response_model=List[ParteResponse])
 async def list_parts(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -72,7 +72,7 @@ async def list_parts(
         parts = await Part.find_all().skip(skip).limit(limit).to_list()
     
     return [
-        PartResponse(
+        ParteResponse(
             id=str(part.id),
             serial=part.serial,
             tipo_pieza=part.tipo_pieza,
@@ -84,7 +84,7 @@ async def list_parts(
     ]
 
 
-@router.get("/{part_id}", response_model=PartResponse)
+@router.get("/{part_id}", response_model=ParteResponse)
 async def get_part(
     part_id: str,
     current_user: User = Depends(get_current_user)
@@ -97,7 +97,7 @@ async def get_part(
             detail="Part not found"
         )
     
-    return PartResponse(
+    return ParteResponse(
         id=str(part.id),
         serial=part.serial,
         tipo_pieza=part.tipo_pieza,
@@ -107,7 +107,7 @@ async def get_part(
     )
 
 
-@router.get("/serial/{serial}", response_model=PartResponse)
+@router.get("/serial/{serial}", response_model=ParteResponse)
 async def get_part_by_serial(
     serial: str,
     current_user: User = Depends(get_current_user)
@@ -120,7 +120,7 @@ async def get_part_by_serial(
             detail=f"Part with serial {serial} not found"
         )
     
-    return PartResponse(
+    return ParteResponse(
         id=str(part.id),
         serial=part.serial,
         tipo_pieza=part.tipo_pieza,
@@ -130,7 +130,7 @@ async def get_part_by_serial(
     )
 
 
-@router.put("/{part_id}", response_model=PartResponse)
+@router.put("/{part_id}", response_model=ParteResponse)
 async def update_part(
     part_id: str,
     part_update: PartUpdate,
@@ -151,7 +151,7 @@ async def update_part(
     
     await part.save()
     
-    return PartResponse(
+    return ParteResponse(
         id=str(part.id),
         serial=part.serial,
         tipo_pieza=part.tipo_pieza,

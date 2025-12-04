@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Depends
 from typing import List
 from app.models import User
-from app.schemas import RiskScoreRequest, RiskScoreResponse, AnomalyResponse
+from app.schemas import PeticionRiesgo, PeticionRiesgoRespuesta, AnomaliaRespuesta
 from app.services.ai_service import ai_service
 from app.dependencies import get_current_user, require_supervisor_or_admin
 
 router = APIRouter(prefix="/ai", tags=["AI Analytics"])
 
 
-@router.post("/risk-score", response_model=RiskScoreResponse)
+@router.post("/risk-score", response_model=PeticionRiesgoRespuesta)
 async def calculate_risk_score(
-    request: RiskScoreRequest,
+    request: PeticionRiesgo,
     use_ai: bool = True,
     current_user: User = Depends(get_current_user)
 ):
@@ -18,7 +18,7 @@ async def calculate_risk_score(
     Calcular puntaje de riesgo para una pieza basado en métricas de producción
     
     Parámetros:
-    - part_id: Serial de la pieza
+    - serial: Serial de la pieza
     - num_retrabajos: Número de operaciones de retrabajo
     - tiempo_total_segundos: Tiempo total en producción (segundos)
     - estacion_actual: Nombre de la estación actual
@@ -29,7 +29,7 @@ async def calculate_risk_score(
     """
     if use_ai:
         result = await ai_service.calculate_risk_score_with_ai(
-            part_id=request.part_id,
+            part_id=request.serial,
             num_retrabajos=request.num_retrabajos,
             tiempo_total_segundos=request.tiempo_total_segundos,
             estacion_actual=request.estacion_actual,
@@ -37,21 +37,21 @@ async def calculate_risk_score(
         )
     else:
         result = await ai_service.calculate_risk_score_heuristic(
-            part_id=request.part_id,
+            part_id=request.serial,
             num_retrabajos=request.num_retrabajos,
             tiempo_total_segundos=request.tiempo_total_segundos,
             estacion_actual=request.estacion_actual,
             tipo_pieza=request.tipo_pieza
         )
     
-    return RiskScoreResponse(
+    return PeticionRiesgoRespuesta(
         riesgo_falla=result["riesgo_falla"],
         nivel=result["nivel"],
         explicacion=result["explicacion"]
     )
 
 
-@router.get("/anomalies", response_model=List[AnomalyResponse])
+@router.get("/anomalies", response_model=List[AnomaliaRespuesta])
 async def detect_anomalies(
     current_user: User = Depends(require_supervisor_or_admin)
 ):
@@ -63,7 +63,7 @@ async def detect_anomalies(
     anomalies = await ai_service.detect_anomalies()
     
     return [
-        AnomalyResponse(
+        AnomaliaRespuesta(
             part_id=anomaly["part_id"],
             tipo_pieza=anomaly["tipo_pieza"],
             tiempo_total_segundos=anomaly["tiempo_total_segundos"],

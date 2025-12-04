@@ -1,7 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
-from app.models import UserRole, PartStatus, EventResult
 from enum import Enum
 
 
@@ -171,27 +170,3 @@ class AnomaliaRespuesta(BaseModel):
     desviacion: float
     es_anomalia: bool
     razon: str
-
-
-# ==================== Aliases de Compatibilidad ====================
-# Mantener compatibilidad con código existente
-UserCreate = UsuarioRegister
-UserLogin = UsuarioLogin
-UserResponse = UsuarioResponse
-UserUpdate = UsuarioUpdate
-
-PartCreate = ParteCreate
-PartResponse = ParteResponse
-PartUpdate = ParteUpdate
-
-StationCreate = EstacionCreate
-StationResponse = EstacionResponse
-StationUpdate = EstacionUpdate
-
-TraceEventCreate = SeguimientoIn
-TraceEventResponse = SeguimientoResponse
-TraceEventUpdate = SeguimientoUpdate
-
-RiskScoreRequest = PeticionRiesgo
-RiskScoreResponse = PeticionRiesgoRespuesta
-AnomalyResponse = AnomaliaRespuesta
