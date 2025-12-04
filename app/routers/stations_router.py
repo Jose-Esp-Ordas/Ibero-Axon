@@ -5,7 +5,7 @@ from app.models import Station, User
 from app.schemas import EstacionResponse, EstacionCreate, EstacionUpdate
 from app.dependencies import get_current_user, require_admin
 
-router = APIRouter(prefix="/stations", tags=["Stations"])
+router = APIRouter(prefix="/estaciones", tags=["Stations"])
 
 
 @router.post("/", response_model=EstacionResponse, status_code=status.HTTP_201_CREATED)

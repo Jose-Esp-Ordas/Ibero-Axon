@@ -13,7 +13,7 @@ from app.dependencies import get_current_user, require_admin
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/registro", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UsuarioRegister):
     """Registrar un nuevo usuario"""
     # Verificar si el usuario ya existe

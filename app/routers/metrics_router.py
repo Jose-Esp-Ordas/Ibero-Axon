@@ -5,10 +5,10 @@ from collections import defaultdict
 from app.models import Part, TraceEvent, Station, User, PartStatus, EventResult
 from app.dependencies import get_current_user, require_supervisor_or_admin
 
-router = APIRouter(prefix="/metrics", tags=["Dashboard Metrics"])
+router = APIRouter(prefix="/metricas", tags=["Dashboard Metrics"])
 
 
-@router.get("/parts-by-status")
+@router.get("/piezas-por-estado")
 async def get_parts_by_status(
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> Dict[str, int]:
@@ -31,7 +31,7 @@ async def get_parts_by_status(
     return status_counts
 
 
-@router.get("/throughput")
+@router.get("/produccion")
 async def get_throughput(
     fecha_desde: datetime = Query(..., alias="from", description="Start date (YYYY-MM-DD)"),
     fecha_hasta: datetime = Query(..., alias="to", description="End date (YYYY-MM-DD)"),
@@ -61,7 +61,7 @@ async def get_throughput(
     return result
 
 
-@router.get("/station-cycle-time")
+@router.get("/tiempo-ciclo-estacion")
 async def get_station_cycle_time(
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> List[Dict[str, Any]]:
@@ -100,7 +100,7 @@ async def get_station_cycle_time(
     return sorted(result, key=lambda x: x["avg_cycle_time_seconds"], reverse=True)
 
 
-@router.get("/scrap-rate")
+@router.get("/tasa-desecho")
 async def get_scrap_rate(
     tipo_pieza: str = Query(None, description="Filter by part type"),
     station_id: str = Query(None, description="Filter by station"),
@@ -164,7 +164,7 @@ async def get_scrap_rate(
     }
 
 
-@router.get("/quality-summary")
+@router.get("/resumen")
 async def get_quality_summary(
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> Dict[str, Any]:

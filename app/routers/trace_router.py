@@ -6,10 +6,10 @@ from app.models import TraceEvent, Part, Station, User, EventResult, PartStatus
 from app.schemas import SeguimientoResponse, SeguimientoIn, SeguimientoUpdate
 from app.dependencies import get_current_user
 
-router = APIRouter(prefix="/trace", tags=["Traceability"])
+router = APIRouter(prefix="/seguimiento", tags=["Traceability"])
 
 
-@router.post("/events", response_model=SeguimientoResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/eventos", response_model=SeguimientoResponse, status_code=status.HTTP_201_CREATED)
 async def create_trace_event(
     event_data: SeguimientoIn,
     current_user: User = Depends(get_current_user)
@@ -70,7 +70,7 @@ async def create_trace_event(
     )
 
 
-@router.get("/events", response_model=List[SeguimientoResponse])
+@router.get("/eventos", response_model=List[SeguimientoResponse])
 async def list_trace_events(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -115,7 +115,7 @@ async def list_trace_events(
     return result
 
 
-@router.get("/parts/{part_serial}/history", response_model=List[SeguimientoResponse])
+@router.get("/partes/{part_serial}/historial", response_model=List[SeguimientoResponse])
 async def get_part_history(
     part_serial: str,
     current_user: User = Depends(get_current_user)
@@ -152,7 +152,7 @@ async def get_part_history(
     return result
 
 
-@router.put("/events/{event_id}", response_model=SeguimientoResponse)
+@router.put("/eventos/{event_id}", response_model=SeguimientoResponse)
 async def update_trace_event(
     event_id: str,
     event_update: SeguimientoUpdate,
@@ -200,7 +200,7 @@ async def update_trace_event(
     )
 
 
-@router.delete("/events/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/eventos/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_trace_event(
     event_id: str,
     current_user: User = Depends(get_current_user)

@@ -38,11 +38,9 @@ class UsuarioLogin(BaseModel):
     password: str
 
 
-class UsuarioRegister(BaseModel):
+class UsuarioRegister(UsuarioLogin):
     """Schema para registro de usuario"""
     nombre: str
-    email: EmailStr
-    password: str
     rol: Rol = Rol.OPERADOR
 
 

@@ -6,7 +6,7 @@ from app.models import Part, PartStatus, User, TraceEvent
 from app.schemas import ParteResponse, ParteCreate, ParteUpdate
 from app.dependencies import get_current_user, require_admin
 
-router = APIRouter(prefix="/parts", tags=["Parts"])
+router = APIRouter(prefix="/partes", tags=["Parts"])
 
 
 @router.post("/", response_model=ParteResponse, status_code=status.HTTP_201_CREATED)

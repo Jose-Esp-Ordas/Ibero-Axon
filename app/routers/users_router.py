@@ -6,7 +6,7 @@ from app.schemas import UsuarioResponse, UsuarioRegister, UsuarioUpdate
 from app.dependencies import require_admin, get_current_user
 from app.auth import get_password_hash
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 
 @router.get("/", response_model=List[UsuarioResponse])

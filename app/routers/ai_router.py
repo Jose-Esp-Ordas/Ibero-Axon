@@ -8,7 +8,7 @@ from app.dependencies import get_current_user, require_supervisor_or_admin
 router = APIRouter(prefix="/ai", tags=["AI Analytics"])
 
 
-@router.post("/risk-score", response_model=PeticionRiesgoRespuesta)
+@router.post("/puntaje-riesgo", response_model=PeticionRiesgoRespuesta)
 async def calculate_risk_score(
     request: PeticionRiesgo,
     use_ai: bool = True,
@@ -51,7 +51,7 @@ async def calculate_risk_score(
     )
 
 
-@router.get("/anomalies", response_model=List[AnomaliaRespuesta])
+@router.get("/anomalias", response_model=List[AnomaliaRespuesta])
 async def detect_anomalies(
     current_user: User = Depends(require_supervisor_or_admin)
 ):
