@@ -6,10 +6,14 @@ from app.models import Part, PartStatus, User, TraceEvent
 from app.schemas import ParteResponse, ParteCreate, ParteUpdate
 from app.dependencies import get_current_user, require_admin
 
-router = APIRouter(prefix="/partes", tags=["Parts"])
+router = APIRouter(prefix="/partes", tags=["Partes"])
 
 
-@router.post("/", response_model=ParteResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+        "/",
+        response_model=ParteResponse,
+        status_code=status.HTTP_201_CREATED
+        )
 async def create_part(
     part_data: ParteCreate,
     current_user: User = Depends(get_current_user)
@@ -18,9 +22,10 @@ async def create_part(
     # Generar serial único automáticamente
     from datetime import datetime
     import random
-    serial = f"{part_data.tipo_pieza}-{datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
+    edad_puma = datetime.now().year - 2004
+    serial = f"{part_data.tipo_pieza}-{edad_puma}-{random.randint(1000, 9999)}"
     
-    # Verificar si el serial ya existe (poco probable pero verificar)
+    # Verificar si el serial ya existe
     existing_part = await Part.find_one(Part.serial == serial)
     if existing_part:
         # Si existe, agregar un número adicional
@@ -70,7 +75,8 @@ async def list_parts(
         query_filters.append(Part.fecha_creacion <= fecha_hasta)
     
     if query_filters:
-        parts = await Part.find(*query_filters).skip(skip).limit(limit).to_list()
+        parts = await Part.find(
+            *query_filters).skip(skip).limit(limit).to_list()
     else:
         parts = await Part.find_all().skip(skip).limit(limit).to_list()
     
@@ -87,31 +93,8 @@ async def list_parts(
     ]
 
 
-@router.get("/{part_id}", response_model=ParteResponse)
+@router.get("/{serial}", response_model=ParteResponse)
 async def get_part(
-    part_id: str,
-    current_user: User = Depends(get_current_user)
-):
-    """Obtener pieza por ID"""
-    part = await Part.get(PydanticObjectId(part_id))
-    if not part:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Part not found"
-        )
-    
-    return ParteResponse(
-        id=str(part.id),
-        serial=part.serial,
-        tipo_pieza=part.tipo_pieza,
-        lote=part.lote,
-        status=part.status,
-        fecha_creacion=part.fecha_creacion
-    )
-
-
-@router.get("/serial/{serial}", response_model=ParteResponse)
-async def get_part_by_serial(
     serial: str,
     current_user: User = Depends(get_current_user)
 ):
@@ -120,7 +103,7 @@ async def get_part_by_serial(
     if not part:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Part with serial {serial} not found"
+            detail=f"Pieza con número de serie {serial} no encontrada"
         )
     
     return ParteResponse(
@@ -144,7 +127,7 @@ async def update_part(
     if not part:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Part not found"
+            detail="Parte no encontrada"
         )
     
     # Actualizar campos
@@ -174,7 +157,7 @@ async def delete_part(
     if not part:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Part not found"
+            detail="Parte no encontrada"
         )
     
     # También eliminar todos los eventos de trazabilidad para esta pieza

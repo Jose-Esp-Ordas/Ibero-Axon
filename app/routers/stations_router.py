@@ -8,7 +8,11 @@ from app.dependencies import get_current_user, require_admin
 router = APIRouter(prefix="/estaciones", tags=["Stations"])
 
 
-@router.post("/", response_model=EstacionResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+        "/",
+        response_model=EstacionResponse,
+        status_code=status.HTTP_201_CREATED
+        )
 async def create_station(
     station_data: EstacionCreate,
     current_user: User = Depends(require_admin)
@@ -51,9 +55,11 @@ async def list_stations(
         query_filters.append(Station.activa == activa)
     
     if query_filters:
-        stations = await Station.find(*query_filters).skip(skip).limit(limit).to_list()
+        stations = await Station.find(
+            *query_filters).skip(skip).limit(limit).to_list()
     else:
-        stations = await Station.find_all().skip(skip).limit(limit).to_list()
+        stations = await Station.find_all(
+            ).skip(skip).limit(limit).to_list()
     
     return [
         EstacionResponse(

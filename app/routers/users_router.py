@@ -2,9 +2,8 @@ from fastapi import APIRouter, HTTPException, status, Depends, Query
 from typing import List, Optional
 from beanie import PydanticObjectId
 from app.models import User, UserRole
-from app.schemas import UsuarioResponse, UsuarioRegister, UsuarioUpdate
-from app.dependencies import require_admin, get_current_user
-from app.auth import get_password_hash
+from app.schemas import UsuarioResponse, UsuarioUpdate
+from app.dependencies import require_admin
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -26,9 +25,11 @@ async def list_users(
         query_filters.append(User.activo == activo)
     
     if query_filters:
-        users = await User.find(*query_filters).skip(skip).limit(limit).to_list()
+        users = await User.find(
+            *query_filters).skip(skip).limit(limit).to_list()
     else:
-        users = await User.find_all().skip(skip).limit(limit).to_list()
+        users = await User.find_all(
+            ).skip(skip).limit(limit).to_list()
     
     return [
         UsuarioResponse(
