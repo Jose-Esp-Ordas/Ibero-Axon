@@ -27,7 +27,17 @@
 			"type": "string"
 		},
 		{
+			"key": "part_serial",
+			"value": "",
+			"type": "string"
+		},
+		{
 			"key": "station_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "station_name",
 			"value": "",
 			"type": "string"
 		},
@@ -406,6 +416,7 @@
 									"if (pm.response.code === 201) {",
 									"    var jsonData = pm.response.json();",
 									"    pm.collectionVariables.set('part_id', jsonData.id);",
+									"    pm.collectionVariables.set('part_serial', jsonData.serial);",
 									"}"
 								],
 								"type": "text/javascript"
@@ -426,7 +437,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"serial\": \"PZA-TEST-001\",\n  \"tipo_pieza\": \"X1\",\n  \"lote\": \"LOTE-2024-12\",\n  \"status\": \"EN_PROCESO\"\n}"
+							"raw": "{\n  \"tipo_pieza\": \"X1\",\n  \"lote\": \"LOTE-2024-12\",\n  \"status\": \"EN_PROCESO\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/parts/",
@@ -480,9 +491,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/parts/serial/PZA-TEST-001",
+							"raw": "{{base_url}}/parts/serial/{{part_serial}}",
 							"host": ["{{base_url}}"],
-							"path": ["parts", "serial", "PZA-TEST-001"]
+							"path": ["parts", "serial", "{{part_serial}}"]
 						}
 					}
 				},
@@ -596,7 +607,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"part_id\": \"PZA-TEST-001\",\n  \"station_id\": \"{{station_id}}\",\n  \"timestamp_entrada\": \"2024-12-03T10:00:00\",\n  \"timestamp_salida\": \"2024-12-03T10:15:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Ensamble completado correctamente\"\n}"
+							"raw": "{\n  \"serial\": \"{{part_serial}}\",\n  \"nombre_estacion\": \"{{station_name}}\",\n  \"timestamp_entrada\": \"2024-12-03T10:00:00\",\n  \"timestamp_salida\": \"2024-12-03T10:15:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Ensamble completado correctamente\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/trace/events",
@@ -633,9 +644,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/trace/parts/PZA-TEST-001/history",
+							"raw": "{{base_url}}/trace/parts/{{part_serial}}/history",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "parts", "PZA-TEST-001", "history"]
+							"path": ["trace", "parts", "{{part_serial}}", "history"]
 						}
 					}
 				},
@@ -854,7 +865,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"part_id\": \"PZA-TEST-001\",\n  \"num_retrabajos\": 1,\n  \"tiempo_total_segundos\": 850,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
+							"raw": "{\n  \"serial\": \"{{part_serial}}\",\n  \"num_retrabajos\": 1,\n  \"tiempo_total_segundos\": 850,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/ai/risk-score",
@@ -879,7 +890,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"part_id\": \"PZA-TEST-001\",\n  \"num_retrabajos\": 2,\n  \"tiempo_total_segundos\": 1500,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
+							"raw": "{\n  \"serial\": \"{{part_serial}}\",\n  \"num_retrabajos\": 2,\n  \"tiempo_total_segundos\": 1500,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/ai/risk-score?use_ai=false",
