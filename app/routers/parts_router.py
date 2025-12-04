@@ -23,7 +23,8 @@ async def create_part(
     from datetime import datetime
     import random
     edad_puma = datetime.now().year - 2004
-    serial = f"{part_data.tipo_pieza}-{edad_puma}-{random.randint(1000, 9999)}"
+    dia = datetime.now().strftime("%d%m")
+    serial = f"{part_data.tipo_pieza}-{edad_puma}-{dia}-{random.randint(1000, 9999)}"
     
     # Verificar si el serial ya existe
     existing_part = await Part.find_one(Part.serial == serial)
