@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
 from app.models import Part, PartStatus, User, TraceEvent
-from app.schemas import ParteResponse, PartCreate, PartUpdate
+from app.schemas import ParteResponse, ParteCreate, ParteUpdate
 from app.dependencies import get_current_user, require_admin
 
 router = APIRouter(prefix="/parts", tags=["Parts"])
@@ -11,20 +11,23 @@ router = APIRouter(prefix="/parts", tags=["Parts"])
 
 @router.post("/", response_model=ParteResponse, status_code=status.HTTP_201_CREATED)
 async def create_part(
-    part_data: PartCreate,
+    part_data: ParteCreate,
     current_user: User = Depends(get_current_user)
 ):
     """Crear una nueva pieza"""
-    # Verificar si el serial ya existe
-    existing_part = await Part.find_one(Part.serial == part_data.serial)
+    # Generar serial único automáticamente
+    from datetime import datetime
+    import random
+    serial = f"{part_data.tipo_pieza}-{datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
+    
+    # Verificar si el serial ya existe (poco probable pero verificar)
+    existing_part = await Part.find_one(Part.serial == serial)
     if existing_part:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Part with serial {part_data.serial} already exists"
-        )
+        # Si existe, agregar un número adicional
+        serial = f"{serial}-{random.randint(100, 999)}"
     
     new_part = Part(
-        serial=part_data.serial,
+        serial=serial,
         tipo_pieza=part_data.tipo_pieza,
         lote=part_data.lote,
         status=part_data.status
@@ -133,7 +136,7 @@ async def get_part_by_serial(
 @router.put("/{part_id}", response_model=ParteResponse)
 async def update_part(
     part_id: str,
-    part_update: PartUpdate,
+    part_update: ParteUpdate,
     current_user: User = Depends(get_current_user)
 ):
     """Actualizar pieza"""
