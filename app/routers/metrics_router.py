@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, Query
 from typing import List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import defaultdict
 from app.models import Part, TraceEvent, Station, User, PartStatus, EventResult
-from app.dependencies import get_current_user, require_supervisor_or_admin
+from app.dependencies import require_supervisor_or_admin
 
-router = APIRouter(prefix="/metrics", tags=["Dashboard Metrics"])
+router = APIRouter(prefix="/metricas", tags=["Dashboard Metrics"])
 
 
-@router.get("/parts-by-status")
+@router.get("/piezas-por-estado")
 async def get_parts_by_status(
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> Dict[str, int]:
@@ -31,10 +31,18 @@ async def get_parts_by_status(
     return status_counts
 
 
-@router.get("/throughput")
+@router.get("/produccion")
 async def get_throughput(
-    fecha_desde: datetime = Query(..., alias="from", description="Start date (YYYY-MM-DD)"),
-    fecha_hasta: datetime = Query(..., alias="to", description="End date (YYYY-MM-DD)"),
+    fecha_desde: datetime = Query(
+        ...,
+        alias="from",
+        description="Start date (YYYY-MM-DD)"
+        ),
+    fecha_hasta: datetime = Query(
+        ...,
+        alias="to",
+        description="End date (YYYY-MM-DD)"
+        ),
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> List[Dict[str, Any]]:
     """
@@ -61,24 +69,25 @@ async def get_throughput(
     return result
 
 
-@router.get("/station-cycle-time")
+@router.get("/tiempo-ciclo-estacion")
 async def get_station_cycle_time(
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> List[Dict[str, Any]]:
     """
     Obtener tiempo de ciclo promedio por estación (en segundos)
-    Retorna: [{"station_id": "...", "station_name": "...", "avg_cycle_time_seconds": 150.5}, ...]
     """
     # Obtener todos los eventos completos (aquellos con timestamp_salida)
     events = await TraceEvent.find(
-        TraceEvent.timestamp_salida != None
+        TraceEvent.timestamp_salida is not None
     ).to_list()
     
     # Calcular tiempos de ciclo por estación
     station_times = defaultdict(list)
     for event in events:
         if event.timestamp_salida and event.timestamp_entrada:
-            cycle_time = (event.timestamp_salida - event.timestamp_entrada).total_seconds()
+            cycle_time = (
+                event.timestamp_salida - event.timestamp_entrada
+                ).total_seconds()
             station_times[event.station_id].append(cycle_time)
     
     # Calcular promedios y obtener nombres de estaciones
@@ -97,10 +106,14 @@ async def get_station_cycle_time(
             "sample_count": len(times)
         })
     
-    return sorted(result, key=lambda x: x["avg_cycle_time_seconds"], reverse=True)
+    return sorted(
+        result,
+        key=lambda x: x["avg_cycle_time_seconds"],
+        reverse=True
+        )
 
 
-@router.get("/scrap-rate")
+@router.get("/tasa-desecho")
 async def get_scrap_rate(
     tipo_pieza: str = Query(None, description="Filter by part type"),
     station_id: str = Query(None, description="Filter by station"),
@@ -111,7 +124,7 @@ async def get_scrap_rate(
     Puede filtrarse por tipo de pieza y/o estación
     """
     # Construir query para eventos
-    query_filters = [TraceEvent.resultado != None]
+    query_filters = [TraceEvent.resultado is not None]
     
     if station_id:
         query_filters.append(TraceEvent.station_id == station_id)
@@ -121,7 +134,9 @@ async def get_scrap_rate(
     # Filtrar por tipo_pieza si se especifica
     if tipo_pieza:
         # Obtener todas las piezas de este tipo
-        parts_of_type = await Part.find(Part.tipo_pieza == tipo_pieza).to_list()
+        parts_of_type = await Part.find(
+            Part.tipo_pieza == tipo_pieza
+            ).to_list()
         part_serials = {part.serial for part in parts_of_type}
         events = [e for e in events if e.part_id in part_serials]
     
@@ -129,7 +144,8 @@ async def get_scrap_rate(
     total_events = len(events)
     scrap_events = sum(1 for e in events if e.resultado == EventResult.SCRAP)
     
-    scrap_rate = (scrap_events / total_events * 100) if total_events > 0 else 0
+    scrap_rate = (scrap_events / total_events * 100
+                  ) if total_events > 0 else 0
     
     # Agrupar por tipo_pieza para desglose detallado
     part_type_stats = defaultdict(lambda: {"total": 0, "scrap": 0})
@@ -144,7 +160,8 @@ async def get_scrap_rate(
     # Calcular tasas por tipo
     breakdown = []
     for tipo, stats in part_type_stats.items():
-        rate = (stats["scrap"] / stats["total"] * 100) if stats["total"] > 0 else 0
+        rate = (
+            stats["scrap"] / stats["total"] * 100) if stats["total"] > 0 else 0
         breakdown.append({
             "tipo_pieza": tipo,
             "total_eventos": stats["total"],
@@ -164,7 +181,7 @@ async def get_scrap_rate(
     }
 
 
-@router.get("/quality-summary")
+@router.get("/resumen")
 async def get_quality_summary(
     current_user: User = Depends(require_supervisor_or_admin)
 ) -> Dict[str, Any]:
@@ -176,19 +193,34 @@ async def get_quality_summary(
     total_parts = len(parts)
     
     # Contar por estado
-    ok_parts = sum(1 for p in parts if p.status == PartStatus.OK)
-    scrap_parts = sum(1 for p in parts if p.status == PartStatus.SCRAP)
-    retrabajo_parts = sum(1 for p in parts if p.status == PartStatus.RETRABAJO)
-    en_proceso_parts = sum(1 for p in parts if p.status == PartStatus.EN_PROCESO)
+    ok_parts = sum(
+        1 for p in parts if p.status == PartStatus.OK
+        )
+    scrap_parts = sum(
+        1 for p in parts if p.status == PartStatus.SCRAP
+        )
+    retrabajo_parts = sum(
+        1 for p in parts if p.status == PartStatus.RETRABAJO
+        )
+    en_proceso_parts = sum(
+        1 for p in parts if p.status == PartStatus.EN_PROCESO
+        )
     
     # Obtener todos los eventos
-    events = await TraceEvent.find(TraceEvent.resultado != None).to_list()
+    events = await TraceEvent.find(
+        TraceEvent.resultado is not None).to_list()
     total_events = len(events)
     
     # Contar eventos por resultado
-    ok_events = sum(1 for e in events if e.resultado == EventResult.OK)
-    scrap_events = sum(1 for e in events if e.resultado == EventResult.SCRAP)
-    retrabajo_events = sum(1 for e in events if e.resultado == EventResult.RETRABAJO)
+    ok_events = sum(
+        1 for e in events if e.resultado == EventResult.OK
+        )
+    scrap_events = sum(
+        1 for e in events if e.resultado == EventResult.SCRAP
+        )
+    retrabajo_events = sum(
+        1 for e in events if e.resultado == EventResult.RETRABAJO
+        )
     
     return {
         "total_parts": total_parts,
@@ -199,9 +231,15 @@ async def get_quality_summary(
             "EN_PROCESO": en_proceso_parts
         },
         "parts_percentages": {
-            "ok_percent": round((ok_parts / total_parts * 100) if total_parts > 0 else 0, 2),
-            "scrap_percent": round((scrap_parts / total_parts * 100) if total_parts > 0 else 0, 2),
-            "retrabajo_percent": round((retrabajo_parts / total_parts * 100) if total_parts > 0 else 0, 2)
+            "ok_percent": round((
+                ok_parts / total_parts * 100
+                ) if total_parts > 0 else 0, 2),
+            "scrap_percent": round((
+                scrap_parts / total_parts * 100
+                ) if total_parts > 0 else 0, 2),
+            "retrabajo_percent": round((
+                retrabajo_parts / total_parts * 100
+                ) if total_parts > 0 else 0, 2)
         },
         "total_events": total_events,
         "events_by_result": {
@@ -209,5 +247,7 @@ async def get_quality_summary(
             "SCRAP": scrap_events,
             "RETRABAJO": retrabajo_events
         },
-        "first_pass_yield": round((ok_events / total_events * 100) if total_events > 0 else 0, 2)
+        "first_pass_yield": round((
+            ok_events / total_events * 100
+            ) if total_events > 0 else 0, 2)
     }

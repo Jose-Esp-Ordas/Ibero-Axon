@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -38,11 +38,9 @@ class UsuarioLogin(BaseModel):
     password: str
 
 
-class UsuarioRegister(BaseModel):
+class UsuarioRegister(UsuarioLogin):
     """Schema para registro de usuario"""
     nombre: str
-    email: EmailStr
-    password: str
     rol: Rol = Rol.OPERADOR
 
 

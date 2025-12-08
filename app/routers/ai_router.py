@@ -1,14 +1,18 @@
 from fastapi import APIRouter, Depends
 from typing import List
 from app.models import User
-from app.schemas import PeticionRiesgo, PeticionRiesgoRespuesta, AnomaliaRespuesta
+from app.schemas import (
+    PeticionRiesgo,
+    PeticionRiesgoRespuesta,
+    AnomaliaRespuesta
+    )
 from app.services.ai_service import ai_service
 from app.dependencies import get_current_user, require_supervisor_or_admin
 
 router = APIRouter(prefix="/ai", tags=["AI Analytics"])
 
 
-@router.post("/risk-score", response_model=PeticionRiesgoRespuesta)
+@router.post("/puntaje-riesgo", response_model=PeticionRiesgoRespuesta)
 async def calculate_risk_score(
     request: PeticionRiesgo,
     use_ai: bool = True,
@@ -25,7 +29,7 @@ async def calculate_risk_score(
     - tipo_pieza: Tipo de pieza
     - use_ai: Usar mejora de Gemini AI (por defecto: True)
     
-    Retorna puntaje de riesgo (0.0-1.0), nivel de riesgo (BAJO/MEDIO/ALTO), y explicación
+    Retorna puntaje de riesgo, nivel de riesgo y explicación
     """
     if use_ai:
         result = await ai_service.calculate_risk_score_with_ai(
@@ -51,14 +55,14 @@ async def calculate_risk_score(
     )
 
 
-@router.get("/anomalies", response_model=List[AnomaliaRespuesta])
+@router.get("/anomalias", response_model=List[AnomaliaRespuesta])
 async def detect_anomalies(
     current_user: User = Depends(require_supervisor_or_admin)
 ):
     """
-    Detectar piezas anómalas basándose en tiempo de ciclo excesivo o cantidad de retrabajos
+    Detectar piezas anómalas basándose en tiempo de ciclos o retrabajos
     
-    Retorna lista de piezas que se desvían significativamente del promedio de su tipo
+    Retorna lista de piezas que se desvían del promedio de su tipo
     """
     anomalies = await ai_service.detect_anomalies()
     

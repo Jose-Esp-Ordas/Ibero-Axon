@@ -8,10 +8,10 @@ async def init_db():
     """Inicializar conexión a la base de datos y Beanie ODM"""
     # Crear cliente Motor
     client = AsyncIOMotorClient(settings.mongodb_url)
-    
+
     # Obtener base de datos
     database = client[settings.database_name]
-    
+
     # Inicializar Beanie con modelos de documentos
     await init_beanie(
         database=database,
@@ -22,5 +22,5 @@ async def init_db():
             TraceEvent
         ]
     )
-    
-    print(f"✅ Database initialized: {settings.database_name}")
+
+    print(f" Base de datos inicializada: {settings.database_name}")
