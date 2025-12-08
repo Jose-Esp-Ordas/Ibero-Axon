@@ -124,11 +124,11 @@ class AIService:
         
         # Si Gemini AI no está configurado, retornar resultado heurístico
         if not self.model:
-            print("⚠️  Gemini AI no configurado - usando solo heurística")
+            print("Gemini AI no configurado - usando solo heurística")
             return heuristic_result
         
         try:
-            print("🤖 Consultando Gemini AI para análisis de riesgo...")
+            print("Consultando Gemini AI para análisis de riesgo...")
             # Preparar contexto para IA
             prompt = f"""
             Analiza el siguiente caso de una pieza en producción y evalúa el riesgo de falla:
@@ -177,7 +177,7 @@ class AIService:
                 elif line.startswith('EXPLICACION:'):
                     ai_explicacion = line.split(':', 1)[1].strip()
             
-            print(f"✅ Gemini AI completado - Score: {ai_score}, Nivel: {ai_nivel}")
+            print(f"Gemini AI completado - Score: {ai_score}, Nivel: {ai_nivel}")
             
             return {
                 "riesgo_falla": round(min(1.0, ai_score), 2),
