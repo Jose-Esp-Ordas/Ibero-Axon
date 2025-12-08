@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
     """Eventos del ciclo de vida: inicio y cierre"""
     # Inicio
     await init_db()
-    print(f"🚀 {settings.app_name} v{settings.app_version} started")
+    print(f"{settings.app_name} v{settings.app_version} started")
     yield
     # Cierre
     print("👋 Application shutdown")

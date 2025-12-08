@@ -188,7 +188,7 @@ class AIService:
             }
         
         except Exception as e:
-            print(f"❌ Error en Gemini AI: {str(e)} - usando heurística")
+            print(f"Error en Gemini AI: {str(e)} - usando heurística")
             # Si la IA falla, retornar resultado heurístico
             heuristic_result["ai_enhanced"] = False
             heuristic_result["ai_error"] = str(e)
