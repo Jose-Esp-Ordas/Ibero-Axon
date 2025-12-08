@@ -22,22 +22,12 @@
 			"type": "string"
 		},
 		{
-			"key": "part_id",
-			"value": "",
-			"type": "string"
-		},
-		{
 			"key": "part_serial",
 			"value": "",
 			"type": "string"
 		},
 		{
 			"key": "station_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "station_name",
 			"value": "",
 			"type": "string"
 		},
@@ -109,9 +99,9 @@
 							"raw": "{\n  \"nombre\": \"Admin User\",\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\",\n  \"rol\": \"ADMIN\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/auth/register",
+							"raw": "{{base_url}}/auth/registro",
 							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"path": ["auth", "registro"]
 						}
 					}
 				},
@@ -130,9 +120,9 @@
 							"raw": "{\n  \"nombre\": \"Operador Test\",\n  \"email\": \"operador@test.com\",\n  \"password\": \"operador123\",\n  \"rol\": \"OPERADOR\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/auth/register",
+							"raw": "{{base_url}}/auth/registro",
 							"host": ["{{base_url}}"],
-							"path": ["auth", "register"]
+							"path": ["auth", "registro"]
 						}
 					}
 				},
@@ -274,6 +264,23 @@
 							]
 						}
 					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						}
+					}
 				}
 			]
 		},
@@ -400,6 +407,23 @@
 							"path": ["stations", "{{station_id}}"]
 						}
 					}
+				},
+				{
+					"name": "Delete Station",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/stations/{{station_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["stations", "{{station_id}}"]
+						}
+					}
 				}
 			]
 		},
@@ -415,7 +439,6 @@
 								"exec": [
 									"if (pm.response.code === 201) {",
 									"    var jsonData = pm.response.json();",
-									"    pm.collectionVariables.set('part_id', jsonData.id);",
 									"    pm.collectionVariables.set('part_serial', jsonData.serial);",
 									"}"
 								],
@@ -464,23 +487,6 @@
 					}
 				},
 				{
-					"name": "Get Part by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/parts/{{part_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["parts", "{{part_id}}"]
-						}
-					}
-				},
-				{
 					"name": "Get Part by Serial",
 					"request": {
 						"method": "GET",
@@ -491,9 +497,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/parts/serial/{{part_serial}}",
+							"raw": "{{base_url}}/parts/{{part_serial}}",
 							"host": ["{{base_url}}"],
-							"path": ["parts", "serial", "{{part_serial}}"]
+							"path": ["parts", "{{part_serial}}"]
 						}
 					}
 				},
@@ -563,12 +569,29 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"OK\"\n}"
+							"raw": "{\n  \"status\": \"COMPLETADO\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/parts/{{part_id}}",
+							"raw": "{{base_url}}/parts/{{part_serial}}",
 							"host": ["{{base_url}}"],
-							"path": ["parts", "{{part_id}}"]
+							"path": ["parts", "{{part_serial}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Part",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/parts/{{part_serial}}",
+							"host": ["{{base_url}}"],
+							"path": ["parts", "{{part_serial}}"]
 						}
 					}
 				}
@@ -607,12 +630,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"serial\": \"{{part_serial}}\",\n  \"nombre_estacion\": \"{{station_name}}\",\n  \"timestamp_entrada\": \"2024-12-03T10:00:00\",\n  \"timestamp_salida\": \"2024-12-03T10:15:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Ensamble completado correctamente\"\n}"
+							"raw": "{\n  \"part_id\": \"{{part_serial}}\",\n  \"station_id\": \"{{station_id}}\",\n  \"timestamp_entrada\": \"2024-12-08T10:00:00\",\n  \"timestamp_salida\": \"2024-12-08T10:15:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Ensamble completado correctamente\",\n  \"operador_id\": \"{{user_id}}\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/trace/events",
+							"raw": "{{base_url}}/trace/eventos",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "events"]
+							"path": ["trace", "eventos"]
 						}
 					}
 				},
@@ -627,9 +650,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/trace/events",
+							"raw": "{{base_url}}/trace/eventos",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "events"]
+							"path": ["trace", "eventos"]
 						}
 					}
 				},
@@ -644,9 +667,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/trace/parts/{{part_serial}}/history",
+							"raw": "{{base_url}}/trace/partes/{{part_serial}}/historial",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "parts", "{{part_serial}}", "history"]
+							"path": ["trace", "partes", "{{part_serial}}", "historial"]
 						}
 					}
 				},
@@ -661,9 +684,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/trace/events?station_id={{station_id}}",
+							"raw": "{{base_url}}/trace/eventos?station_id={{station_id}}",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "events"],
+							"path": ["trace", "eventos"],
 							"query": [
 								{
 									"key": "station_id",
@@ -684,9 +707,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/trace/events?resultado=OK",
+							"raw": "{{base_url}}/trace/eventos?resultado=OK",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "events"],
+							"path": ["trace", "eventos"],
 							"query": [
 								{
 									"key": "resultado",
@@ -712,12 +735,29 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"timestamp_salida\": \"2024-12-03T10:20:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Actualizado\"\n}"
+							"raw": "{\n  \"timestamp_salida\": \"2024-12-08T10:20:00\",\n  \"resultado\": \"OK\",\n  \"observaciones\": \"Actualizado\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/trace/events/{{event_id}}",
+							"raw": "{{base_url}}/trace/eventos/{{event_id}}",
 							"host": ["{{base_url}}"],
-							"path": ["trace", "events", "{{event_id}}"]
+							"path": ["trace", "eventos", "{{event_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Trace Event",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/trace/eventos/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["trace", "eventos", "{{event_id}}"]
 						}
 					}
 				}
@@ -737,9 +777,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/metrics/parts-by-status",
+							"raw": "{{base_url}}/metrics/piezas-por-estado",
 							"host": ["{{base_url}}"],
-							"path": ["metrics", "parts-by-status"]
+							"path": ["metrics", "piezas-por-estado"]
 						}
 					}
 				},
@@ -754,16 +794,16 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/metrics/throughput?from=2024-12-01&to=2024-12-31",
+							"raw": "{{base_url}}/metrics/produccion?desde=2024-12-01&hasta=2024-12-31",
 							"host": ["{{base_url}}"],
-							"path": ["metrics", "throughput"],
+							"path": ["metrics", "produccion"],
 							"query": [
 								{
-									"key": "from",
+									"key": "desde",
 									"value": "2024-12-01"
 								},
 								{
-									"key": "to",
+									"key": "hasta",
 									"value": "2024-12-31"
 								}
 							]
@@ -781,9 +821,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/metrics/station-cycle-time",
+							"raw": "{{base_url}}/metrics/tiempo-ciclo-estacion",
 							"host": ["{{base_url}}"],
-							"path": ["metrics", "station-cycle-time"]
+							"path": ["metrics", "tiempo-ciclo-estacion"]
 						}
 					}
 				},
@@ -798,9 +838,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/metrics/scrap-rate",
+							"raw": "{{base_url}}/metrics/tasa-desecho",
 							"host": ["{{base_url}}"],
-							"path": ["metrics", "scrap-rate"]
+							"path": ["metrics", "tasa-desecho"]
 						}
 					}
 				},
@@ -815,9 +855,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/metrics/scrap-rate?tipo_pieza=X1",
+							"raw": "{{base_url}}/metrics/tasa-desecho?tipo_pieza=X1",
 							"host": ["{{base_url}}"],
-							"path": ["metrics", "scrap-rate"],
+							"path": ["metrics", "tasa-desecho"],
 							"query": [
 								{
 									"key": "tipo_pieza",
@@ -838,9 +878,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/metrics/quality-summary",
+							"raw": "{{base_url}}/metrics/resumen",
 							"host": ["{{base_url}}"],
-							"path": ["metrics", "quality-summary"]
+							"path": ["metrics", "resumen"]
 						}
 					}
 				}
@@ -865,12 +905,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"serial\": \"{{part_serial}}\",\n  \"num_retrabajos\": 1,\n  \"tiempo_total_segundos\": 850,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
+							"raw": "{\n  \"part_id\": \"{{part_serial}}\",\n  \"num_retrabajos\": 1,\n  \"tiempo_total_segundos\": 850,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/ai/risk-score",
+							"raw": "{{base_url}}/ai/puntaje-riesgo",
 							"host": ["{{base_url}}"],
-							"path": ["ai", "risk-score"]
+							"path": ["ai", "puntaje-riesgo"]
 						}
 					}
 				},
@@ -890,15 +930,15 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"serial\": \"{{part_serial}}\",\n  \"num_retrabajos\": 2,\n  \"tiempo_total_segundos\": 1500,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
+							"raw": "{\n  \"part_id\": \"{{part_serial}}\",\n  \"num_retrabajos\": 2,\n  \"tiempo_total_segundos\": 1500,\n  \"estacion_actual\": \"INSPECCION_FINAL\",\n  \"tipo_pieza\": \"X1\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/ai/risk-score?use_ai=false",
+							"raw": "{{base_url}}/ai/puntaje-riesgo?usar_ia=false",
 							"host": ["{{base_url}}"],
-							"path": ["ai", "risk-score"],
+							"path": ["ai", "puntaje-riesgo"],
 							"query": [
 								{
-									"key": "use_ai",
+									"key": "usar_ia",
 									"value": "false"
 								}
 							]
@@ -916,9 +956,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/ai/anomalies",
+							"raw": "{{base_url}}/ai/anomalias",
 							"host": ["{{base_url}}"],
-							"path": ["ai", "anomalies"]
+							"path": ["ai", "anomalias"]
 						}
 					}
 				}
